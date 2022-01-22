@@ -20,10 +20,13 @@ sys_exit(void)
   return 0;  // not reached
 }
 
+// change. assignment 1 part b.
 int
 sys_wait(void)
-{
-  return wait();
+{ 
+  int* status;
+  argptr(0,(void*)&status, sizeof(status));  //argptr() is in syscall.c
+  return wait(status);
 }
 
 int
