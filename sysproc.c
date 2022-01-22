@@ -96,3 +96,12 @@ sys_add(void)
   int b=2021;
   return a+b;
 }
+int                // assignment 1 part a
+sys_exits(void)
+{
+  int a;
+  if(argint(0,&a)<0){
+    return -1;
+  }
+  return exits(a);
+}

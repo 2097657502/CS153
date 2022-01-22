@@ -24,6 +24,7 @@ char* sbrk(int);
 int sleep(int);
 int uptime(void);
 int add(void);
+int exits(int); // assignment 1 part a.
 
 // ulib.c
 int stat(const char*, struct stat*);
