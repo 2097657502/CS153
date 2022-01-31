@@ -26,6 +26,7 @@ int uptime(void);
 int add(void);
 //int exit(int)__attribute__((noreturn)); // assignment 1 part a.
 int wait(int*); // assignment 1 part b.
+int waitpid(int pid, int* status, int options); //part C
 
 // ulib.c
 int stat(const char*, struct stat*);

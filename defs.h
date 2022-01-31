@@ -122,6 +122,7 @@ void            wakeup(void*);
 void            yield(void);
 //int             exit(int); // assignment 1 part a
 int             wait(int*); // assignment 1 part b
+int             waitpid(int, int*, int); // part d 
 
 // swtch.S
 void            swtch(struct context**, struct context*);

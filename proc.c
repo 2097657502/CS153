@@ -302,7 +302,7 @@ wait(int* status)
 	//int* in argument
 	//look at child exit status in exitStatus and child exitStatus set in exits() below
 	
-	if(*status != NULL){
+	if(status != 0){
 		*status=p->status;//Getting the status of the child process of which we will return
 	}else {
 		*status = 0;      //If status is null, we discard the status by setting to 0 
@@ -329,7 +329,7 @@ int
 waitpid(int pid, int* status, int options)
 {
   struct proc *p;
-  int samePid, pid;
+  int samePid;
   struct proc *curproc = myproc();
 
   acquire(&ptable.lock);
@@ -350,7 +350,7 @@ waitpid(int pid, int* status, int options)
         p->killed = 0;
         p->state = UNUSED;
 
-        if(status != NULL){
+        if(status != 0){
                 *status=p->status;
         }else {
                 *status = 0;      
@@ -361,7 +361,7 @@ waitpid(int pid, int* status, int options)
       }
     }
 
-    if(!samePid || curproc->killed || curproc == NULL){//Checking to see if not same pid or curproc is killed or curproc doesn't exist 
+    if(!samePid || curproc->killed || curproc == 0){//Checking to see if not same pid or curproc is killed or curproc doesn't exist 
       release(&ptable.lock);
       return -1;
     }
