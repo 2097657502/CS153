@@ -301,10 +301,12 @@ wait(int* status)
 	//here is the change. assignment 1 part b
 	//int* in argument
 	//look at child exit status in exitStatus and child exitStatus set in exits() below
-	if(status){
-		*status=p->status;
+	
+	if(*status != NULL){
+		*status=p->status;//Getting the status of the child process of which we will return
+	}else {
+		*status = 0;      //If status is null, we discard the status by setting to 0 
 	}
-	p->status=0;
 
         release(&ptable.lock);
         return pid;
@@ -319,6 +321,52 @@ wait(int* status)
 
     // Wait for children to exit.  (See wakeup1 call in proc_exit.)
     sleep(curproc, &ptable.lock);  //DOC: wait-sleep
+  }
+}
+
+// Part C, waitpid implementation
+int
+waitpid(int pid, int* status, int options)
+{
+  struct proc *p;
+  int samePid, pid;
+  struct proc *curproc = myproc();
+
+  acquire(&ptable.lock);
+  for(;;){
+    samePid = 0; //Currently have not found the same pid as the one given in the parameter list
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+      if(p->pid != pid) //If the current process' pid is the same as the pid that is passed in, we continue
+        continue;
+      samePid = 1;      //Recording that we found the same pid
+      if(p->state == ZOMBIE){
+        pid = p->pid;
+        kfree(p->kstack);
+        p->kstack = 0;
+        freevm(p->pgdir);
+        p->pid = 0;
+        p->parent = 0;
+        p->name[0] = 0;
+        p->killed = 0;
+        p->state = UNUSED;
+
+        if(status != NULL){
+                *status=p->status;
+        }else {
+                *status = 0;      
+        }
+
+        release(&ptable.lock);
+        return pid;
+      }
+    }
+
+    if(!samePid || curproc->killed || curproc == NULL){//Checking to see if not same pid or curproc is killed or curproc doesn't exist 
+      release(&ptable.lock);
+      return -1;
+    }
+
+    sleep(curproc, &ptable.lock);
   }
 }
 

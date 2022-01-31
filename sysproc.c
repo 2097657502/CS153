@@ -29,8 +29,28 @@ int
 sys_wait(void)
 { 
   int* status;
-  argptr(0,(void*)&status, sizeof(status));  //argptr() is in syscall.c
+  if(argptr(0,(char**) &status, sizeof(*status) < 0)){
+	return -1;//Checking to see if status exists
+  }
+		
+  }  //argptr() is in syscall.c
   return wait(status);
+}
+
+int sys_waitpid(void){
+  int pid, options;
+  int *status;
+  
+  if(argint(0, &pid) < 0){
+	return -1; //Checking to see if pid exists, first parameter passed in
+  }
+
+  if(argptr(1,(void*) &status, sizeof(*status) < 0)){
+	return -1; //Checking to see if status exists, second parameter passed in
+  }
+  
+  return waitpid(pid, status, options);
+  
 }
 
 int
