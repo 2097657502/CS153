@@ -3,7 +3,7 @@ struct rtcdate;
 
 // system calls
 int fork(void);
-int exit(void) __attribute__((noreturn));
+int exit(int status) __attribute__((noreturn)); // assignment 1 part a, changing the paramter of the predefined system call
 //int wait(void);
 int pipe(int*);
 int write(int, const void*, int);
@@ -24,7 +24,7 @@ char* sbrk(int);
 int sleep(int);
 int uptime(void);
 int add(void);
-int exits(int); // assignment 1 part a.
+//int exit(int)__attribute__((noreturn)); // assignment 1 part a.
 int wait(int*); // assignment 1 part b.
 
 // ulib.c

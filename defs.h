@@ -104,7 +104,7 @@ int             pipewrite(struct pipe*, char*, int);
 //PAGEBREAK: 16
 // proc.c
 int             cpuid(void);
-void            exit(void);
+void            exit(int status); // assignment 1 part a, changing the paramter of the pre-defined system call
 int             fork(void);
 int             growproc(int);
 int             kill(int);
@@ -120,7 +120,7 @@ void            userinit(void);
 //int             wait(void);
 void            wakeup(void*);
 void            yield(void);
-int             exits(int); // assignment 1 part a
+//int             exit(int); // assignment 1 part a
 int             wait(int*); // assignment 1 part b
 
 // swtch.S

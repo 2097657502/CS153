@@ -225,7 +225,7 @@ fork(void)
 // An exited process remains in the zombie state
 // until its parent calls wait() to find out it exited.
 void
-exit(void)
+exit(int status)
 {
   struct proc *curproc = myproc();
   struct proc *p;
@@ -260,6 +260,8 @@ exit(void)
         wakeup1(initproc);
     }
   }
+
+  curproc->status = status; // Getting the status of the current proc before it is exited/becomes a zombie
 
   // Jump into the scheduler, never to return.
   curproc->state = ZOMBIE;
@@ -300,9 +302,9 @@ wait(int* status)
 	//int* in argument
 	//look at child exit status in exitStatus and child exitStatus set in exits() below
 	if(status){
-		*status=p->exitStatus;
+		*status=p->status;
 	}
-	p->exitStatus=0;
+	p->status=0;
 
         release(&ptable.lock);
         return pid;
@@ -543,46 +545,46 @@ procdump(void)
 }
 
 //copy the code form above exit()
-int
-exits(int status)
-{
-  struct proc *curproc = myproc();
-  struct proc *p;
-  int fd;
+//int
+//exits(int status)
+//{
+//  struct proc *curproc = myproc();
+//  struct proc *p;
+//  int fd;
 
-  if(curproc == initproc)
-    panic("init exiting");
+//  if(curproc == initproc)
+//   panic("init exiting");
 
   // Close all open files.
-  for(fd = 0; fd < NOFILE; fd++){
-    if(curproc->ofile[fd]){
-      fileclose(curproc->ofile[fd]);
-      curproc->ofile[fd] = 0;
-    }
-  }
+//  for(fd = 0; fd < NOFILE; fd++){
+//    if(curproc->ofile[fd]){
+//      fileclose(curproc->ofile[fd]);
+//      curproc->ofile[fd] = 0;
+//   }
+//  }
 
-  begin_op();
-  iput(curproc->cwd);
-  end_op();
-  curproc->cwd = 0;
+//  begin_op();
+//  iput(curproc->cwd);
+//  end_op();
+//  curproc->cwd = 0;
 
-  acquire(&ptable.lock);
+//  acquire(&ptable.lock);
 
   // Parent might be sleeping in wait().
-  wakeup1(curproc->parent);
+//  wakeup1(curproc->parent);
   
   // Pass abandoned children to init.
-  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-    if(p->parent == curproc){
-      p->parent = initproc;
-      if(p->state == ZOMBIE)
-	wakeup1(initproc);
-    }
-  }
+//  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+//    if(p->parent == curproc){
+//      p->parent = initproc;
+//      if(p->state == ZOMBIE)
+//	wakeup1(initproc);
+//    }
+//  }
 
   // Jump into the scheduler, never to return.
-  curproc->state = ZOMBIE;
-  curproc->exitStatus = status;   //here is the change, store exits status in exits(), assignment 1 part a
-  sched();
-  panic("zombie exit");
-}
+//  curproc->state = ZOMBIE;
+//  curproc->exits = status;   //here is the change, store exits status in exits(), assignment 1 part a
+//  sched();
+//  panic("zombie exit");
+//}
