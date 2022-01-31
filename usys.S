@@ -30,4 +30,5 @@ SYSCALL(sbrk)
 SYSCALL(sleep)
 SYSCALL(uptime)
 SYSCALL(add)
-SYSCALL(exits) // assignment 1 part a
+SYSCALL(waitpid) // part C
+//SYSCALL(exits) // assignment 1 part a
