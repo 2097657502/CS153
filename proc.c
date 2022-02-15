@@ -636,3 +636,13 @@ procdump(void)
 //  sched();
 //  panic("zombie exit");
 //}
+
+//lab2 part 1
+//1. practical implementation of setpriority
+//2. use myproc() to get current processes
+//3. priority update of the process
+int priority(int p){
+  struct proc *a=myproc();
+  a->priority = p;
+  return 0;
+}
