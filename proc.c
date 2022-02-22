@@ -112,8 +112,6 @@ found:
   memset(p->context, 0, sizeof *p->context);
   p->context->eip = (uint)forkret;
 
-  p->priority=10; //lab2 part 2, here is to set the default priority
-
   return p;
 }
 
@@ -313,6 +311,8 @@ i		*status=p->status;//Getting the status of the child process of which we will 
         release(&ptable.lock);
         return pid;
       }
+    }
+
     }
 
     // No point waiting if we don't have any children.
@@ -610,37 +610,6 @@ procdump(void)
     if(p->state == UNUSED)
       continue;
     if(p->state >= 0 && p->state < NELEM(states) && states[p->state])
-      state = states[p->state];
-    else
-      state = "???";
-    cprintf("%d %s %s", p->pid, state, p->name);
-    if(p->state == SLEEPING){
-      getcallerpcs((uint*)p->context->ebp+2, pc);
-      for(i=0; i<10 && pc[i] != 0; i++)
-        cprintf(" %p", pc[i]);
-    }
-    cprintf("\n");
-  }
-}
-
-//copy the code form above exit()
-//int
-//exits(int status)
-//{
-//  struct proc *curproc = myproc();
-//  struct proc *p;
-//  int fd;
-
-//  if(curproc == initproc)
-//   panic("init exiting");
-
-  // Close all open files.
-//  for(fd = 0; fd < NOFILE; fd++){
-//    if(curproc->ofile[fd]){
-//      fileclose(curproc->ofile[fd]);
-//      curproc->ofile[fd] = 0;
-//   }
-//  }
 
 //  begin_op();
 //  iput(curproc->cwd);
@@ -667,13 +636,3 @@ procdump(void)
 //  sched();
 //  panic("zombie exit");
 //}
-
-//lab2 part 1
-//1. practical implementation of setpriority
-//2. use myproc() to get current processes
-//3. priority update of the process
-int priority(int p){
-  struct proc *a=myproc();
-  a->priority = p;
-  return 0;
-}
