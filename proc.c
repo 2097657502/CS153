@@ -112,6 +112,8 @@ found:
   memset(p->context, 0, sizeof *p->context);
   p->context->eip = (uint)forkret;
 
+  p->priority=10; //lab2 part 2, here is to set the default priority
+
   return p;
 }
 
@@ -391,18 +393,47 @@ scheduler(void)
 
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
+
+    struct proc *npro=ptable.proc; //here is the change for lab2 par2
+    int highest=npro->priority;    //here is the change for lab2 par2
+
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state != RUNNABLE)
+      //if(p->state != RUNNABLE)
+      if(p->state != RUNNABLE || p==npro) //here is the change for lab2 par2
         continue;
 
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
-      c->proc = p;
-      switchuvm(p);
-      p->state = RUNNING;
 
-      swtch(&(c->scheduler), p->context);
+      //here is the change for lab2 par2
+      if(p->priority<highest){
+        highest=p->priority;
+        npro->priority=npro->priority-1; //let priority increase because it need to be waiting.
+        npro=p;
+      }
+      else{ //process need wait, if priority biger than 0, increase it, if equal 0, unchange. 0 is min priority.
+        if(p->priority>0){ 
+          p->priority=p->priority-1;
+        }
+      }
+      if(npro->priority<31){ //run the highest process. if small than 31, decrease priority. 31 is max priority.
+        npro->priority=npro->priority+1;
+      }
+
+      //c->proc = p;
+      //switchuvm(p);
+      //p->state = RUNNING;
+
+      //here is the change for lab2 par2
+      c->proc=npro; 
+      switchuvm(npro);
+      npro->state=RUNNING;
+
+      //swtch(&(c->scheduler), p->context);
+
+      swtch(&(c->scheduler), npro->context);
+
       switchkvm();
 
       // Process is done running for now.
@@ -636,3 +667,13 @@ procdump(void)
 //  sched();
 //  panic("zombie exit");
 //}
+
+//lab2 part 1
+//1. practical implementation of setpriority
+//2. use myproc() to get current processes
+//3. priority update of the process
+int priority(int p){
+  struct proc *a=myproc();
+  a->priority = p;
+  return 0;
+}

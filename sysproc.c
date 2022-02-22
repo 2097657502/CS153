@@ -138,3 +138,14 @@ sys_add(void)
 //  }
 //  return exit(a);
 //}
+
+//lab2 part 1, add a handler system to the priority system call to update the data
+int
+sys_priority(void)
+{
+  int p;
+  if(argint(0, &p)<0){
+    return -1;
+  }
+  return priority(p);
+}

@@ -32,3 +32,4 @@ SYSCALL(uptime)
 SYSCALL(add)
 SYSCALL(waitpid) // part C
 //SYSCALL(exits) // assignment 1 part a
+SYSCALL(priority) // lab2 part a, let user to call the system
