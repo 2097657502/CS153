@@ -302,8 +302,8 @@ wait(int* status)
 	//int* in argument
 	//look at child exit status in exitStatus and child exitStatus set in exits() below
 	
-	if(status != 0){
-		*status=p->status;//Getting the status of the child process of which we will return
+	if(status != NULL){
+i		*status=p->status;//Getting the status of the child process of which we will return
 	}else {
 		*status = 0;      //If status is null, we discard the status by setting to 0 
 	}
