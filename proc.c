@@ -88,6 +88,7 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
+  p->priority = 31; //lowest possible prioirity given upon allocation
 
   release(&ptable.lock);
 
@@ -275,7 +276,8 @@ int
 wait(int* status)
 {
   struct proc *p;
-  int havekids, pid;
+  int havekids;
+  int pid;
   struct proc *curproc = myproc();
   
   acquire(&ptable.lock);
@@ -302,8 +304,8 @@ wait(int* status)
 	//int* in argument
 	//look at child exit status in exitStatus and child exitStatus set in exits() below
 	
-	if(status != NULL){
-i		*status=p->status;//Getting the status of the child process of which we will return
+	if(status != 0){
+		*status=p->status;//Getting the status of the child process of which we will return
 	}else {
 		*status = 0;      //If status is null, we discard the status by setting to 0 
 	}
@@ -312,6 +314,7 @@ i		*status=p->status;//Getting the status of the child process of which we will 
         return pid;
       }
     }
+
 
     }
 
@@ -323,8 +326,7 @@ i		*status=p->status;//Getting the status of the child process of which we will 
 
     // Wait for children to exit.  (See wakeup1 call in proc_exit.)
     sleep(curproc, &ptable.lock);  //DOC: wait-sleep
-  }
-}
+ }
 
 // Part C, waitpid implementation
 int
@@ -610,29 +612,21 @@ procdump(void)
     if(p->state == UNUSED)
       continue;
     if(p->state >= 0 && p->state < NELEM(states) && states[p->state])
+      state = states[p->state];
+    else
+      state = "???";
+    cprintf("%d %s %s", p->pid, state, p->name);
+    if(p->state == SLEEPING){
+      getcallerpcs((uint*)p->context->ebp+2, pc);
+      for(i=0; i<10 && pc[i] != 0; i++)
+        cprintf(" %p", pc[i]);
+    }
+    cprintf("\n");
+  }
+}
 
-//  begin_op();
-//  iput(curproc->cwd);
-//  end_op();
-//  curproc->cwd = 0;
-
-//  acquire(&ptable.lock);
-
-  // Parent might be sleeping in wait().
-//  wakeup1(curproc->parent);
-  
-  // Pass abandoned children to init.
-//  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-//    if(p->parent == curproc){
-//      p->parent = initproc;
-//      if(p->state == ZOMBIE)
-//	wakeup1(initproc);
-//    }
-//  }
-
-  // Jump into the scheduler, never to return.
-//  curproc->state = ZOMBIE;
-//  curproc->exits = status;   //here is the change, store exits status in exits(), assignment 1 part a
-//  sched();
-//  panic("zombie exit");
-//}
+int priority(int p){
+  struct proc *a=myproc();
+  a->priority = p;
+  return 0;
+}
