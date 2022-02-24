@@ -60,6 +60,21 @@ sys_waitpid(void)
 }
 
 int
+sys_getPriority(void)
+{
+ return getPriority();
+}
+int
+sys_setPriority(void)
+{
+  int p;
+  if(argint(0, &p)<0){
+    return -1;
+  }
+  return setPriority(p);
+}
+
+int
 sys_kill(void)
 {
   int pid;
@@ -128,24 +143,4 @@ sys_add(void)
   int a=1;
   int b=2021;
   return a+b;
-}
-//int                // assignment 1 part a
-//sys_exit(int)
-//{
-//  int a;
-//  if(argint(0,&a)<0){
-//    return -1;
-//  }
-//  return exit(a);
-//}
-
-//lab2 part 1, add a handler system to the priority system call to update the data
-int
-sys_priority(void)
-{
-  int p;
-  if(argint(0, &p)<0){
-    return -1;
-  }
-  return priority(p);
 }

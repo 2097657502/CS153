@@ -28,7 +28,8 @@ int add(void);
 int wait(int*); // assignment 1 part b.
 int waitpid(int pid, int* status, int options); //part C
 
-int priority(int); //lab2 part 1
+int getPriority(void);//lab2 part 2
+int setPriority(int); //lab2 part 2
 
 // ulib.c
 int stat(const char*, struct stat*);

@@ -106,7 +106,8 @@ extern int sys_uptime(void);
 extern int sys_add(void);
 extern int sys_waitpid(void);
 //extern int sys_exits(void); // assignment 1 part a
-extern int sys_priority(void); //lab2 part 1, function prototype
+extern int sys_getPriority(void); //lab2 part 2
+extern int sys_setPriority(void); //lab2 part 2
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -132,8 +133,8 @@ static int (*syscalls[])(void) = {
 [SYS_close]   sys_close,
 [SYS_add]     sys_add,
 [SYS_waitpid] sys_waitpid,
-//[SYS_exits]   sys_exits, //assignment 1 part a
-[SYS_priority] sys_priority,//lab2 part a, pointer to system call
+[SYS_getPriority] sys_getPriority,//lab2 part 2
+[SYS_setPriority] sys_setPriority,//lab2 part 2
 };
 
 void

@@ -124,7 +124,8 @@ void            yield(void);
 int             wait(int*); // assignment 1 part b
 int             waitpid(int, int*, int); // part d 
 
-int             priority(int); //lab2 part 1, add declarationof
+int		getPriority(void);//lab2 part 2
+int             setPriority(int); //lab2 part 2 
 
 // swtch.S
 void            swtch(struct context**, struct context*);

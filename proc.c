@@ -88,7 +88,7 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
-  p->priority = 31; //lowest possible prioirity given upon allocation
+  p->priority = 0; //lowest possible prioirity given upon allocation
 
   release(&ptable.lock);
 
@@ -374,6 +374,19 @@ waitpid(int pid, int* status, int options)
   }
 }
 
+//Lab 2
+int getPriority(void){
+  struct proc *currproc = myproc();
+    return currproc->priority;
+}
+
+int setPriority(int priority){
+  struct proc *p = myproc();
+  p->priority = priority;
+  yield();//Wait for next cpu cycle
+  return 0;
+}
+
 //PAGEBREAK: 42
 // Per-CPU process scheduler.
 // Each CPU calls scheduler() after setting itself up.
@@ -388,6 +401,10 @@ scheduler(void)
   struct proc *p;
   struct cpu *c = mycpu();
   c->proc = 0;
+
+  struct proc *npro;   //Temporary variable to hold process to 
+                       //compare to determine which process has highest priority
+  struct proc *highest;//The highest priority process
   
   for(;;){
     // Enable interrupts on this processor.
@@ -396,46 +413,32 @@ scheduler(void)
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
 
-    struct proc *npro=ptable.proc; //here is the change for lab2 par2
-    int highest=npro->priority;    //here is the change for lab2 par2
-
+    //*npro=ptable.proc; //here is the change for lab2 par2
+    //int highest=npro->priority;    //here is the change for lab2 par2
+    
+    //Here we loop through to find our first runnable process
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      //if(p->state != RUNNABLE)
-      if(p->state != RUNNABLE || p==npro) //here is the change for lab2 par2
-        continue;
-
-      // Switch to chosen process.  It is the process's job
-      // to release ptable.lock and then reacquire it
-      // before jumping back to us.
-
-      //here is the change for lab2 par2
-      if(p->priority<highest){
-        highest=p->priority;
-        npro->priority=npro->priority-1; //let priority increase because it need to be waiting.
-        npro=p;
+      if(p->state != RUNNABLE){ //here is the change for lab2 par2
+	 continue;
       }
-      else{ //process need wait, if priority biger than 0, increase it, if equal 0, unchange. 0 is min priority.
-        if(p->priority>0){ 
-          p->priority=p->priority-1;
-        }
+      
+      highest = p; // The highest priority process is the first runnable one in the beginning
+	           // Base process
+	           //
+      //Looping over the process table again to look for the highest priority process to run
+      for(npro = ptable.proc; npro < &ptable.proc[NPROC]; npro++){
+        if(npro->state != RUNNABLE) { continue; } //Continuing if we find a process that is not runnable (irrelevant)
+        
+        if(npro->priority > highest->priority) { highest = npro; } //If the priority of npro is greater than highest, assign highest to npro
       }
-      if(npro->priority<31){ //run the highest process. if small than 31, decrease priority. 31 is max priority.
-        npro->priority=npro->priority+1;
-      }
+      
+      c->proc=highest; 
+      switchuvm(highest);
+      highest->state=RUNNING;
 
-      //c->proc = p;
-      //switchuvm(p);
-      //p->state = RUNNING;
+      if(p->priority < 30) { p->priority--; } //Decreasing the priority of the process when it runs
 
-      //here is the change for lab2 par2
-      c->proc=npro; 
-      switchuvm(npro);
-      npro->state=RUNNING;
-
-      //swtch(&(c->scheduler), p->context);
-
-      swtch(&(c->scheduler), npro->context);
-
+      swtch(&(c->scheduler), highest->context);
       switchkvm();
 
       // Process is done running for now.
@@ -623,10 +626,4 @@ procdump(void)
     }
     cprintf("\n");
   }
-}
-
-int priority(int p){
-  struct proc *a=myproc();
-  a->priority = p;
-  return 0;
 }

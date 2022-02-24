@@ -22,6 +22,5 @@
 #define SYS_close  21
 #define SYS_add	   22
 #define SYS_waitpid 23
-//#define SYS_exits  23  //assignment 1 part a
-#define SYS_priority 24 // lab2 part 1, defined a system call
-
+#define SYS_getPriority 24 // lab2 part 2
+#define SYS_setPriority 25 // lab2 part 2
